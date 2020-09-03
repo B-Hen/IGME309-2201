@@ -1,0 +1,7 @@
+﻿  Main.cpp
+C:\Users\brean\OneDrive\Documents\309\Exercises\EO1\Main.cpp(8,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 11 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  EO1.vcxproj -> C:\Users\brean\OneDrive\Documents\309\Exercises\Release\EO1.exe
