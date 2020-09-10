@@ -275,9 +275,29 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	vector3 center = vector3(0, 0, 0);
+	//get the angle for the base 
+	float angle = (2 * PI) / a_nSubdivisions;
+
+	//save the point before
+	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), 0);
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//get the end points to complete a new triangle
+		float pointX = a_fRadius * cosf(angle * i);
+		float pointY = a_fRadius * sinf(angle * i);
+
+		//make the triangle for the base
+		AddTri(pointBefore, center, vector3(pointX, pointY, 0));
+
+		//make triangle for the side
+		AddTri(pointBefore, vector3(pointX, pointY, 0), vector3(0, 0, a_fHeight));
+
+		//change the point before to the new point
+		pointBefore = vector3(pointX, pointY, 0);
+	}
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -299,9 +319,32 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//center vector for the base 
+	vector3 center = vector3(0, 0, 0);
+	vector3 centerTop = vector3(0, 0, a_fHeight);
+
+	//get the angle of the subdivisions
+	float angle = (2 * PI) / a_nSubdivisions;
+	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), 0);
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make the x and y points
+		float pointX = a_fRadius * cosf(angle * i);
+		float pointY = a_fRadius * sinf(angle * i);
+
+		//make the base of the cylinder
+		AddTri(pointBefore, center, vector3(pointX, pointY, 0));
+
+		//make the sides of the cylinder
+		AddQuad(pointBefore, vector3(pointX, pointY, 0), vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight));
+
+		//make the top of the cylinder
+		AddTri(vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight), centerTop);
+
+		//make the pointBefore equal to the point found here
+		pointBefore =  vector3(pointX, pointY, 0);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -329,9 +372,42 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//center vector for the base 
+	vector3 center = vector3(0, 0, 0);
+	vector3 centerTop = vector3(0, 0, a_fHeight);
+
+	//get the angle of the subdivisions
+	float angle = (2 * PI) / a_nSubdivisions;
+	vector3 pointBefore = vector3(a_fOuterRadius * cosf(-angle), a_fOuterRadius * sinf(-angle), 0);
+	vector3 pointBefore2 = vector3(a_fInnerRadius * cosf(-angle), a_fInnerRadius * sinf(-angle), 0);
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make the x and y points
+		float pointX = a_fOuterRadius * cosf(angle * i);
+		float pointY = a_fOuterRadius * sinf(angle * i);
+
+		float pointXInner = a_fInnerRadius * cosf(angle * i);
+		float pointYInner = a_fInnerRadius * sinf(angle * i);
+
+		//make the base of the cylinder and then add it so the center is empty
+		AddTri(pointBefore, pointBefore2, vector3(pointX, pointY, 0));
+		AddTri(vector3(pointXInner, pointYInner, 0), vector3(pointX, pointY, 0), pointBefore2);
+
+		//make the sides of the cylinder
+		AddQuad(pointBefore, vector3(pointX, pointY, 0), vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight));
+
+		//make the inside sides of the cylinder 
+		AddQuad(vector3(pointXInner, pointYInner, 0), pointBefore2, vector3(pointXInner, pointYInner, a_fHeight), vector3(pointBefore2.x, pointBefore2.y, a_fHeight));
+
+		//make the top of the cylinder and then add it so the center is empty 
+		AddTri(vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight), vector3(pointBefore2.x, pointBefore2.y, a_fHeight));
+		AddTri(vector3(pointXInner, pointYInner, a_fHeight), vector3(pointBefore2.x, pointBefore2.y, a_fHeight), vector3(pointX, pointY, a_fHeight));
+
+		//make the pointBefore equal to the point found here
+		pointBefore = vector3(pointX, pointY, 0);
+		pointBefore2 = vector3(pointXInner, pointYInner, 0);
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
