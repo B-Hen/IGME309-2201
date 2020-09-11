@@ -1,5 +1,5 @@
 #include "MyMesh.h"
-#include <math.h>
+
 void MyMesh::Init(void)
 {
 	m_bBinded = false;
@@ -503,28 +503,66 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	vector3 center = vector3(0, 0, 0);
-	//get the angle for the base 
+
+	//vector to hold the old points
+	vector3 pointBefore = vector3(0, 0, 0);
+	
 	float angle = (2 * PI) / a_nSubdivisions;
 
-	//save the point before
-	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), 0);
+	float centerz = 0;
 
+	float radius = a_fRadius;
+	
+	pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), center.z);
+	vector3 pointBefore2 = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), center.z);
+	
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		//get the end points to complete a new triangle
-		float pointX = a_fRadius * cosf(angle * i);
-		float pointY = a_fRadius * sinf(angle * i);
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			float x = a_fRadius * cosf(angle * j);
+			float y = a_fRadius * sinf(angle * j);
 
-		//make the triangle for the base
-		AddTri(pointBefore, center, vector3(pointX, pointY, 0));
-		//change the point before to the new point
-		pointBefore = vector3(pointX, pointY, 0);
+			AddTri(pointBefore, vector3(x, y, centerz), center);
+			pointBefore = vector3(x, y, centerz);
+		}
+
+		a_fRadius -= 0.1;
+		centerz += 0.1f;
+		center = vector3(0, 0, centerz);
+		pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), centerz);
 	}
 
+	//vector to hold the old points
+	pointBefore = vector3(0, 0, 0);
 
+	center = vector3(0, 0, 0);
 
+	angle = (2 * PI) / a_nSubdivisions;
 
-	// Adding information about color
+	centerz = 0;
+
+	pointBefore = vector3(radius * cosf(-angle), radius * sinf(-angle), centerz);
+
+	for (int k = 0; k < a_nSubdivisions; k++)
+	{
+		for (int j = 0; j < a_nSubdivisions; j++)
+		{
+			float x = radius * cosf(angle * j);
+			float y = radius * sinf(angle * j);
+
+			AddTri(pointBefore, center, vector3(x, y, centerz));
+			pointBefore = vector3(x, y, centerz);
+		}
+
+		radius -= 0.1;
+		centerz -= 0.1f;
+		center = vector3(0, 0, centerz);
+		pointBefore = vector3(radius * cosf(-angle), radius * sinf(-angle), centerz);
+		
+	}
+
+    //Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
