@@ -1,4 +1,5 @@
 #include "MyMesh.h"
+#include <math.h>
 void MyMesh::Init(void)
 {
 	m_bBinded = false;
@@ -437,9 +438,48 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	vector3 pointUno = vector3(0, 0, 0);
+	vector3 pointZwei = vector3(0, 0, 0);
+	vector3 pointAlteUno = vector3(0, 0, 0);
+	vector3 pointAlteZwei = vector3(0, 0, 0);
+
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		for (int j = 0; j <= a_nSubdivisionsB; j++)
+		{
+			//k will reset when j moves on to its next iteration the k is swtiching between 0 and o so only save the first 2 points
+			for (int k = 1; k >= 0; k--)
+			{
+				float s = (i + k) % a_nSubdivisionsA + 0.5;
+				float t = j % a_nSubdivisionsB;
+	
+				float x = (a_fOuterRadius + a_fInnerRadius * cosf(s * (2 * PI) / a_nSubdivisionsA)) * cosf(t * (2 * PI) / a_nSubdivisionsB);
+				float y = (a_fOuterRadius + a_fInnerRadius * cosf(s * (2 * PI) / a_nSubdivisionsA)) * sinf(t * (2 * PI) / a_nSubdivisionsB);
+				float z = a_fInnerRadius * sinf(s * (2 * PI) / a_nSubdivisionsA);
+
+				if (k == 1)
+				{
+					pointUno = vector3(x, y, z);
+				}
+				if (k == 0)
+				{
+					pointZwei = vector3(x, y, z);
+				}
+
+				//if its more than 0 draw the tures 
+				if (j != 0)
+				{
+					AddTri(pointAlteUno, pointAlteZwei, pointUno);
+					AddTri(pointZwei, pointUno, pointAlteZwei);
+	
+				}
+
+				//make the olf points equal to the new points 
+				pointAlteUno = pointUno;
+				pointAlteZwei = pointZwei;
+			}
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -462,9 +502,27 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	vector3 center = vector3(0, 0, 0);
+	//get the angle for the base 
+	float angle = (2 * PI) / a_nSubdivisions;
+
+	//save the point before
+	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), 0);
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//get the end points to complete a new triangle
+		float pointX = a_fRadius * cosf(angle * i);
+		float pointY = a_fRadius * sinf(angle * i);
+
+		//make the triangle for the base
+		AddTri(pointBefore, center, vector3(pointX, pointY, 0));
+		//change the point before to the new point
+		pointBefore = vector3(pointX, pointY, 0);
+	}
+
+
+
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
