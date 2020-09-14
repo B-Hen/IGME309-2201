@@ -1,5 +1,4 @@
 #include "MyMesh.h"
-
 void MyMesh::Init(void)
 {
 	m_bBinded = false;
@@ -276,12 +275,12 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	vector3 center = vector3(0, 0, 0);
+	vector3 center = vector3(0, 0, -a_fHeight/2);
 	//get the angle for the base 
 	float angle = (2 * PI) / a_nSubdivisions;
 
 	//save the point before
-	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), 0);
+	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), -a_fHeight / 2);
 
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
@@ -290,13 +289,13 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 		float pointY = a_fRadius * sinf(angle * i);
 
 		//make the triangle for the base
-		AddTri(pointBefore, center, vector3(pointX, pointY, 0));
+		AddTri(pointBefore, center, vector3(pointX, pointY, -a_fHeight / 2));
 
 		//make triangle for the side
-		AddTri(pointBefore, vector3(pointX, pointY, 0), vector3(0, 0, a_fHeight));
+		AddTri(pointBefore, vector3(pointX, pointY, -a_fHeight / 2), vector3(0, 0, a_fHeight/2));
 
 		//change the point before to the new point
-		pointBefore = vector3(pointX, pointY, 0);
+		pointBefore = vector3(pointX, pointY, -a_fHeight / 2);
 	}
 
 
@@ -321,12 +320,12 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	//center vector for the base 
-	vector3 center = vector3(0, 0, 0);
-	vector3 centerTop = vector3(0, 0, a_fHeight);
+	vector3 center = vector3(0, 0, -a_fHeight / 2);
+	vector3 centerTop = vector3(0, 0, a_fHeight/2);
 
 	//get the angle of the subdivisions
 	float angle = (2 * PI) / a_nSubdivisions;
-	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), 0);
+	vector3 pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), -a_fHeight / 2);
 
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
@@ -335,16 +334,16 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 		float pointY = a_fRadius * sinf(angle * i);
 
 		//make the base of the cylinder
-		AddTri(pointBefore, center, vector3(pointX, pointY, 0));
+		AddTri(pointBefore, center, vector3(pointX, pointY, -a_fHeight / 2));
 
 		//make the sides of the cylinder
-		AddQuad(pointBefore, vector3(pointX, pointY, 0), vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight));
+		AddQuad(pointBefore, vector3(pointX, pointY, -a_fHeight / 2), vector3(pointBefore.x, pointBefore.y, a_fHeight/2), vector3(pointX, pointY, a_fHeight/2));
 
 		//make the top of the cylinder
-		AddTri(vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight), centerTop);
+		AddTri(vector3(pointBefore.x, pointBefore.y, a_fHeight/2), vector3(pointX, pointY, a_fHeight/2), centerTop);
 
 		//make the pointBefore equal to the point found here
-		pointBefore =  vector3(pointX, pointY, 0);
+		pointBefore =  vector3(pointX, pointY, -a_fHeight / 2);
 	}
 
 	// Adding information about color
@@ -374,13 +373,13 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	//center vector for the base 
-	vector3 center = vector3(0, 0, 0);
-	vector3 centerTop = vector3(0, 0, a_fHeight);
+	vector3 center = vector3(0, 0, -a_fHeight / 2);
+	vector3 centerTop = vector3(0, 0, a_fHeight/2);
 
 	//get the angle of the subdivisions
 	float angle = (2 * PI) / a_nSubdivisions;
-	vector3 pointBefore = vector3(a_fOuterRadius * cosf(-angle), a_fOuterRadius * sinf(-angle), 0);
-	vector3 pointBefore2 = vector3(a_fInnerRadius * cosf(-angle), a_fInnerRadius * sinf(-angle), 0);
+	vector3 pointBefore = vector3(a_fOuterRadius * cosf(-angle), a_fOuterRadius * sinf(-angle), -a_fHeight / 2);
+	vector3 pointBefore2 = vector3(a_fInnerRadius * cosf(-angle), a_fInnerRadius * sinf(-angle), -a_fHeight / 2);
 
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
@@ -392,22 +391,22 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 		float pointYInner = a_fInnerRadius * sinf(angle * i);
 
 		//make the base of the cylinder and then add it so the center is empty
-		AddTri(pointBefore, pointBefore2, vector3(pointX, pointY, 0));
-		AddTri(vector3(pointXInner, pointYInner, 0), vector3(pointX, pointY, 0), pointBefore2);
+		AddTri(pointBefore, pointBefore2, vector3(pointX, pointY, -a_fHeight / 2));
+		AddTri(vector3(pointXInner, pointYInner, -a_fHeight / 2), vector3(pointX, pointY, -a_fHeight / 2), pointBefore2);
 
 		//make the sides of the cylinder
-		AddQuad(pointBefore, vector3(pointX, pointY, 0), vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight));
+		AddQuad(pointBefore, vector3(pointX, pointY, -a_fHeight / 2), vector3(pointBefore.x, pointBefore.y, a_fHeight/2), vector3(pointX, pointY, a_fHeight/2));
 
 		//make the inside sides of the cylinder 
-		AddQuad(vector3(pointXInner, pointYInner, 0), pointBefore2, vector3(pointXInner, pointYInner, a_fHeight), vector3(pointBefore2.x, pointBefore2.y, a_fHeight));
+		AddQuad(vector3(pointXInner, pointYInner, -a_fHeight / 2), pointBefore2, vector3(pointXInner, pointYInner, a_fHeight/2), vector3(pointBefore2.x, pointBefore2.y, a_fHeight/2));
 
 		//make the top of the cylinder and then add it so the center is empty 
-		AddTri(vector3(pointBefore.x, pointBefore.y, a_fHeight), vector3(pointX, pointY, a_fHeight), vector3(pointBefore2.x, pointBefore2.y, a_fHeight));
-		AddTri(vector3(pointXInner, pointYInner, a_fHeight), vector3(pointBefore2.x, pointBefore2.y, a_fHeight), vector3(pointX, pointY, a_fHeight));
+		AddTri(vector3(pointBefore.x, pointBefore.y, a_fHeight/2), vector3(pointX, pointY, a_fHeight/2), vector3(pointBefore2.x, pointBefore2.y, a_fHeight/2));
+		AddTri(vector3(pointXInner, pointYInner, a_fHeight/2), vector3(pointBefore2.x, pointBefore2.y, a_fHeight/2), vector3(pointX, pointY, a_fHeight/2));
 
 		//make the pointBefore equal to the point found here
-		pointBefore = vector3(pointX, pointY, 0);
-		pointBefore2 = vector3(pointXInner, pointYInner, 0);
+		pointBefore = vector3(pointX, pointY, -a_fHeight / 2);
+		pointBefore2 = vector3(pointXInner, pointYInner, -a_fHeight / 2);
 	}
 
 	// Adding information about color
@@ -438,16 +437,19 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Release();
 	Init();
 
+	//vectors to hold points 
 	vector3 pointUno = vector3(0, 0, 0);
 	vector3 pointZwei = vector3(0, 0, 0);
 	vector3 pointAlteUno = vector3(0, 0, 0);
 	vector3 pointAlteZwei = vector3(0, 0, 0);
 
+	//loop through for the vertical points
 	for (int i = 0; i < a_nSubdivisionsA; i++)
 	{
+		//loop through for the horzantiluy points 
 		for (int j = 0; j <= a_nSubdivisionsB; j++)
 		{
-			//k will reset when j moves on to its next iteration the k is swtiching between 0 and o so only save the first 2 points
+			//k will reset when j moves on to its next iteration the k is swtiching between 0 and 1 so only save the first 2 points
 			for (int k = 1; k >= 0; k--)
 			{
 				float s = (i + k) % a_nSubdivisionsA + 0.5;
@@ -471,10 +473,9 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 				{
 					AddTri(pointAlteUno, pointAlteZwei, pointUno);
 					AddTri(pointZwei, pointUno, pointAlteZwei);
-	
 				}
 
-				//make the olf points equal to the new points 
+				//make the old points equal to the new points 
 				pointAlteUno = pointUno;
 				pointAlteZwei = pointZwei;
 			}
@@ -502,64 +503,63 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Release();
 	Init();
 
-	vector3 center = vector3(0, 0, 0);
+	//a list to hold the vertices
+	std::vector<vector3> vertices = std::vector<vector3>();
+	a_nSubdivisions *= 3;
 
-	//vector to hold the old points
-	vector3 pointBefore = vector3(0, 0, 0);
+	//floats to hold the vetecies xy is the change in poisition
+	float x, y, z, xy;
 	
-	float angle = (2 * PI) / a_nSubdivisions;
+	//float to hold the place around the circle
+	float stepHorizontal = (2 * PI) / a_nSubdivisions;
+	float stepVertical = PI / a_nSubdivisions;
 
-	float centerz = 0;
+	//floats to hold the angles for each circle
+	float angle90 = 0;
+	float angle360 = 0;
 
-	float radius = a_fRadius;
-	
-	pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), center.z);
-	vector3 pointBefore2 = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), center.z);
-	
-	for (int i = 0; i < a_nSubdivisions; i++)
+	//loop through 0 to 360  horzonital
+	for (int i = 0; i <= a_nSubdivisions; i++)
 	{
-		for (int j = 0; j < a_nSubdivisions; j++)
+		//get the angle from 0 to 360
+		angle360 = (PI / 2) - i * stepVertical;
+		xy = a_fRadius * cosf(angle360);
+		z = a_fRadius * sinf(angle360);
+
+		//loop through to get the points from 90 to -90
+		for (int j = 0; j <= a_nSubdivisions; j++)
 		{
-			float x = a_fRadius * cosf(angle * j);
-			float y = a_fRadius * sinf(angle * j);
+			//get the angle for the vertically
+			angle90 = j * stepHorizontal;
 
-			AddTri(pointBefore, vector3(x, y, centerz), center);
-			pointBefore = vector3(x, y, centerz);
+			x = xy * cosf(angle90);
+			y = xy * sinf(angle90);
+
+			vertices.push_back(vector3(x, y, z));
 		}
-
-		a_fRadius -= 0.1;
-		centerz += 0.1f;
-		center = vector3(0, 0, centerz);
-		pointBefore = vector3(a_fRadius * cosf(-angle), a_fRadius * sinf(-angle), centerz);
 	}
 
-	//vector to hold the old points
-	pointBefore = vector3(0, 0, 0);
-
-	center = vector3(0, 0, 0);
-
-	angle = (2 * PI) / a_nSubdivisions;
-
-	centerz = 0;
-
-	pointBefore = vector3(radius * cosf(-angle), radius * sinf(-angle), centerz);
-
-	for (int k = 0; k < a_nSubdivisions; k++)
+	//floats to hold the current vertices
+	int vertex1 = 0;
+	int vertex2 = 0;
+	
+	//now that all the point are in a list draw it out 
+	for (int i = 0; i < a_nSubdivisions; i++)
 	{
+		//get the first vertices and then the next one in the list
+		vertex1 = i * (a_nSubdivisions + 1);
+		vertex2 = vertex1 + (a_nSubdivisions + 1);
+	
+		//loop through again to connect and draw
 		for (int j = 0; j < a_nSubdivisions; j++)
 		{
-			float x = radius * cosf(angle * j);
-			float y = radius * sinf(angle * j);
+			AddTri(vertices[vertex1 + 1], vertices[vertex2], vertices[vertex1]);
+			AddTri(vertices[vertex2 + 1], vertices[vertex2], vertices[vertex1 + 1]);
 
-			AddTri(pointBefore, center, vector3(x, y, centerz));
-			pointBefore = vector3(x, y, centerz);
+			//move on to a new point
+			vertex1++;
+			vertex2++;
 		}
-
-		radius -= 0.1;
-		centerz -= 0.1f;
-		center = vector3(0, 0, centerz);
-		pointBefore = vector3(radius * cosf(-angle), radius * sinf(-angle), centerz);
-		
 	}
 
     //Adding information about color
