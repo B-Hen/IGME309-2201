@@ -556,7 +556,7 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 			AddTri(vertices[vertex1 + 1], vertices[vertex2], vertices[vertex1]);
 			AddTri(vertices[vertex2 + 1], vertices[vertex2], vertices[vertex1 + 1]);
 
-			//move on to a new point
+			//move on to a new point in the list
 			vertex1++;
 			vertex2++;
 		}
