@@ -15,7 +15,18 @@ Date: 2017/05
 class Application
 {
 	MyMesh* m_pMesh = nullptr;
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	String m_sProgrammer = "Breanna Henriquez - bh4974@rit.edu";
+	int spaceArray[8][11] =
+	{
+		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
+		{0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0},
+		{0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+		{0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0},
+		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+		{1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+		{1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1},
+		{0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0}
+	};
 
 private:
 	static ImGuiObject gui; //GUI object
