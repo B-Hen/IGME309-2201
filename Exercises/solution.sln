@@ -9,7 +9,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E02", "E02\E02.vcxproj", "{
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E03", "E03\E03.vcxproj", "{E60B5B2D-19E8-4FD3-BFF7-CB908C5A651A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E04", "E04\E04.vcxproj", "{531771BB-7F7E-47FF-A148-2AC8F76235A0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E04 - Circle Creation", "E04\E04.vcxproj", "{531771BB-7F7E-47FF-A148-2AC8F76235A0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E05", "E05\E05.vcxproj", "{F8D2226D-0FEB-4B92-9F76-59DBB6936F5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,12 @@ Global
 		{531771BB-7F7E-47FF-A148-2AC8F76235A0}.Release|x64.ActiveCfg = Release|Win32
 		{531771BB-7F7E-47FF-A148-2AC8F76235A0}.Release|x86.ActiveCfg = Release|Win32
 		{531771BB-7F7E-47FF-A148-2AC8F76235A0}.Release|x86.Build.0 = Release|Win32
+		{F8D2226D-0FEB-4B92-9F76-59DBB6936F5C}.Debug|x64.ActiveCfg = Debug|Win32
+		{F8D2226D-0FEB-4B92-9F76-59DBB6936F5C}.Debug|x86.ActiveCfg = Debug|Win32
+		{F8D2226D-0FEB-4B92-9F76-59DBB6936F5C}.Debug|x86.Build.0 = Debug|Win32
+		{F8D2226D-0FEB-4B92-9F76-59DBB6936F5C}.Release|x64.ActiveCfg = Release|Win32
+		{F8D2226D-0FEB-4B92-9F76-59DBB6936F5C}.Release|x86.ActiveCfg = Release|Win32
+		{F8D2226D-0FEB-4B92-9F76-59DBB6936F5C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
