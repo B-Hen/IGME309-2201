@@ -5,6 +5,13 @@ void Application::InitVariables(void)
 	m_pMesh = new MyMesh();
 	//m_pMesh->GenerateCube(1.0f, C_WHITE);
 	m_pMesh->GenerateCube(1.0f, C_BLACK);
+
+	//populate the list with mesh objects
+	for (int i = 0; i < numMesh; i++)
+	{
+		listOfMeshes.push_back(new MyMesh());
+		listOfMeshes[i]->GenerateCube(1.0f, C_BLACK);
+	}
 }
 void Application::Update(void)
 {
@@ -48,7 +55,7 @@ void Application::Display(void)
 			if (spaceArray[i][j] == 1)
 			{
 				//draw, move, and render the invader to the screen
-				m_pMesh->Render(m4Projection, m4View, glm::translate(IDENTITY_M4, vector3((j - 15) + value, (-i + 5) + sinWave, 0)));
+				listOfMeshes[j]->Render(m4Projection, m4View, glm::translate(IDENTITY_M4, vector3((j - 15) + value, (-i + 5) + sinWave, 0)));
 			}
 		}
 	}
@@ -76,6 +83,12 @@ void Application::Display(void)
 void Application::Release(void)
 {
 	SafeDelete(m_pMesh);
+
+	//delete all the mesh objects
+	for (int i = 0; i < numMesh; i++)
+	{
+		SafeDelete(listOfMeshes[i]);
+	}
 
 	//release GUI
 	ShutdownGUI();

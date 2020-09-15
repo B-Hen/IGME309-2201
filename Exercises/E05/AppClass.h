@@ -16,6 +16,8 @@ class Application
 {
 	MyMesh* m_pMesh = nullptr;
 	String m_sProgrammer = "Breanna Henriquez - bh4974@rit.edu";
+	std::vector<MyMesh*> listOfMeshes;
+	int numMesh = 46;
 	int spaceArray[8][11] =
 	{
 		{0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0},
