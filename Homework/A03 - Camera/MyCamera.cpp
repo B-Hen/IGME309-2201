@@ -150,42 +150,13 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
-//method to move the camera forward and backwards
 void MyCamera::MoveForward(float a_fDistance)
-{	
-	//get the forward vector to move forward and backwwards towards whatever the camera is looking at, normalize because it is now in world space
-	vector3 forward = glm::normalize(m_v3Target - m_v3Position);
-	
-	//Add this vector * the distance (how fast the camera moves) to the position, target, and above vector //MUST add to all three or else the rotation becomes wacky a.k.a the target, above, and position don't line up properly after rotation.
-	m_v3Position += forward * a_fDistance;
-	m_v3Target += forward * a_fDistance;
-	m_v3Above += forward * a_fDistance;
-
-}
-
-//method to move the camera up and down
-void MyCamera::MoveVertical(float a_fDistance)
 {
-	//get the up vector to movethe camera vertically, normalize because it is now in world space
-	vector3 up = glm::normalize(m_v3Above - m_v3Position);
-
-	//Add this vector * the distance (how fast the camera moves) to the position, target, and above vector //MUST add to all three or else the rotation becomes wacky a.k.a the target, abovem and position don't line up properly after rotation.
-	m_v3Position += up * a_fDistance;
-	m_v3Target += up * a_fDistance;
-	m_v3Above += up * a_fDistance;
+	//The following is just an example and does not take in account the forward vector (AKA view vector)
+	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
+	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
+	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
 }
 
-//method to move the camera left and right 
-void MyCamera::MoveSideways(float a_fDistance)
-{	
-	//get the forward and up vector to get the right vector so the camera can move sidways, MUST normalize the forward and up vector because in world space now but not the right vector since the right vector is the cross of two normalized vectors
-	vector3 forward = glm::normalize(m_v3Target - m_v3Position);
-	vector3 up = glm::normalize(m_v3Above - m_v3Position);
-	vector3 right = glm::cross(up, forward);
-
-	//Add this vector * the distance (how fast the camera moves) to the position, target, and above vector //MUST add to all three or else the rotation becomes wacky a.k.a the target, above, and position don't line up properly after rotation.
-	m_v3Position += right * a_fDistance;
-	m_v3Target += right * a_fDistance;
-	m_v3Above += right * a_fDistance;
-}
-
+void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
+void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined

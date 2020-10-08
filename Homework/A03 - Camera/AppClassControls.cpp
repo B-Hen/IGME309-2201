@@ -345,7 +345,7 @@ void Application::CameraRotation(float a_fSpeed)
 
 	//Calculate the difference in view with the angle
 	float fAngleX = 0.0f;
-	static float fAngleY = 0.0f;
+	float fAngleY = 0.0f;
 	float fDeltaMouse = 0.0f;
 	if (MouseX < CenterX)
 	{
@@ -369,23 +369,6 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
-
-	//get the forward vector by getting the distance between the target and current positon, don't normalize because this is view space not world space 
-	vector3 forward = m_pCamera->GetTarget() - m_pCamera->GetPosition();		
-	//get the up vector using the above vector and current poisition to rotate around the x-axis, don't normalize because this is view space not world space 
-	vector3 up = m_pCamera->GetAbove() - m_pCamera->GetPosition();				
-	//get the right vector by the getting the cross product of the up and forward vector to rotate around the y-axis, don't normalize becuase this is in the view space not world space
-	vector3 right = glm::cross(up, forward);									
-	
-	//using quaternion rotate around the x axis using the angle and up vector
-	quaternion yaw = glm::angleAxis(fAngleY * 0.01f, glm::normalize(up));
-	//using quaternion rotate around the y axis using the angle and the right vector
-	quaternion pitch = glm::angleAxis(fAngleX * 0.1f, glm::normalize(right));
-	//apply the rotation in the x and y axis to the forward vector 
-	vector3 newTarget = yaw * pitch * forward;
-	//set the new target vector to the current position + where you want to be looking at after rotations in the x and y axis
-	m_pCamera->SetTarget(m_pCamera->GetPosition() + newTarget);
-
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -403,19 +386,10 @@ void Application::ProcessKeyboard(void)
 	if (fMultiplier)
 		fSpeed *= 5.0f;
 
-	//key layout for the movement up down, left right, forwards, backwards
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		m_pCamera->MoveForward(fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		m_pCamera->MoveSideways(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		m_pCamera->MoveSideways(-fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-		m_pCamera->MoveVertical(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-		m_pCamera->MoveVertical(-fSpeed);
 #pragma endregion
 }
 //Joystick

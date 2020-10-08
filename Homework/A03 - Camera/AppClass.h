@@ -41,8 +41,6 @@ private:
 	ControllerInput* m_pController[8]; //Controller
 	uint m_uActCont = 0; //Active Controller of the Application
 
-	quaternion m_qOrientation;
-
 public:
 #pragma region Constructor / Run / Destructor
 	/*
