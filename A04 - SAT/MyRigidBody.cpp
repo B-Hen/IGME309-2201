@@ -1,5 +1,6 @@
 #include "MyRigidBody.h"
 using namespace Simplex;
+
 //Allocation
 void MyRigidBody::Init(void)
 {
@@ -276,16 +277,113 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
+	//float to hold thr radius of object A and B
+	float radiusA, radiusB;
 
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	//matrices to hold the rotation matrix and the absolute of rotational matrix
+	matrix4 rotational, absRotational;
+
+	//get the axis of object A and B through it's model materix
+	vector3 localA[3] = {this->GetModelMatrix()[0], this->GetModelMatrix()[1], this->GetModelMatrix()[2]};
+	vector3 localB[3] = {a_pOther->GetModelMatrix()[0], a_pOther->GetModelMatrix()[1], a_pOther->GetModelMatrix()[2]};
+
+	//get the rotation matrix so object B is in A cooridnate system
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			//set the points of the rotational matrix 
+			rotational[i][j] = glm::dot(this->GetModelMatrix()[i], a_pOther->GetModelMatrix()[j]);
+		}
+	}
+
+	//get rid of error due to rounding with floating points
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			absRotational[i][j] = abs(rotational[i][j]) + FLT_EPSILON;  //epsilon small number to get rid of rounding errors
+		}
+	}
+	
+	//get the translation vector and translate it to a cooridinate system
+	vector3 translation = a_pOther->GetCenterGlobal() - this->GetCenterGlobal();
+	translation = vector3(glm::dot(translation, localA[0]), glm::dot(translation, localA[1]), glm::dot(translation, localA[2]));
+
+	//test the AX, AY, AZ
+	for (int i = 0; i < 3; i++)
+	{
+		radiusA = this->GetHalfWidth()[i];
+		radiusB = (a_pOther->GetHalfWidth()[0] * absRotational[i][0]) + (a_pOther->GetHalfWidth()[1] * absRotational[i][1]) + (a_pOther->GetHalfWidth()[2] * absRotational[i][2]);
+
+		//check to see if the distance between the two radii is less than the radius than there is a no collision
+		if (abs(translation[i]) > radiusA + radiusB)
+		{
+			return 1;
+		}
+	}
+
+	//test the BX, BY, BZ
+	for (int i = 0; i < 3; i++)
+	{
+		radiusA = (this->GetHalfWidth()[0] * absRotational[0][i]) + (this->GetHalfWidth()[1] * absRotational[1][i]) + (this->GetHalfWidth()[2] * absRotational[2][i]);
+		radiusB = a_pOther->GetHalfWidth()[i];
+
+		//check to see if the distance between the two radii is less than the radius than there is a no collision
+		if (abs(translation[0] * rotational[0][i] + translation[1] * rotational[1][i] + translation[2] * rotational[2][i]) > radiusA + radiusB)
+		{
+			return 1;
+		}
+	}
+
+	//for each test get the radius of each object to the projected plane
+	//then check the distance of the two objects center points to the radius sum and see if it is larger
+	//if larger you have a collision
+
+	//test AXxBX (Cross Product)
+	radiusA = this->GetHalfWidth()[1] * absRotational[2][0] + this->GetHalfWidth()[2] * absRotational[1][0];
+	radiusB = a_pOther->GetHalfWidth()[1] * absRotational[0][2] + a_pOther->GetHalfWidth()[2] * absRotational[0][1];
+	if (abs(translation[2] * rotational[1][0] - translation[1] * rotational[2][0]) > radiusA + radiusB) return 1;
+
+	//test AXxBY (Cross Product)
+	radiusA = this->GetHalfWidth()[1] * absRotational[2][1] + this->GetHalfWidth()[2] * absRotational[1][1];
+	radiusB = a_pOther->GetHalfWidth()[0] * absRotational[0][2] + a_pOther->GetHalfWidth()[2] * absRotational[0][0];
+	if (abs(translation[2] * rotational[1][1] - translation[1] * rotational[2][1]) > radiusA + radiusB) return 1;
+
+	//test AXxBZ (Cross Product)
+	radiusA = this->GetHalfWidth()[1] * absRotational[2][2] + this->GetHalfWidth()[2] * absRotational[1][2];
+	radiusB = a_pOther->GetHalfWidth()[0] * absRotational[0][1] + a_pOther->GetHalfWidth()[1] * absRotational[0][0];
+	if (abs(translation[2] * rotational[1][2] - translation[1] * rotational[2][2]) > radiusA + radiusB) return 1;
+
+	//test AYxBX (Cross Product)
+	radiusA = this->GetHalfWidth()[0] * absRotational[2][0] + this->GetHalfWidth()[2] * absRotational[0][0];
+	radiusB = a_pOther->GetHalfWidth()[1] * absRotational[1][2] + a_pOther->GetHalfWidth()[2] * absRotational[1][1];
+	if (abs(translation[0] * rotational[2][0] - translation[2] * rotational[0][0]) > radiusA + radiusB) return 1;
+
+	//test AYxBY (Cross Product)
+	radiusA = this->GetHalfWidth()[0] * absRotational[2][1] + this->GetHalfWidth()[2] * absRotational[0][1];
+	radiusB = a_pOther->GetHalfWidth()[0] * absRotational[1][2] + a_pOther->GetHalfWidth()[2] * absRotational[1][0];
+	if (abs(translation[0] * rotational[2][1] - translation[2] * rotational[0][1]) > radiusA + radiusB) return 1;
+
+	//test AYxBZ (Cross Product)
+	radiusA = this->GetHalfWidth()[0] * absRotational[2][2] + this->GetHalfWidth()[2] * absRotational[0][2];
+	radiusB = a_pOther->GetHalfWidth()[0] * absRotational[1][1] + a_pOther->GetHalfWidth()[1] * absRotational[1][0];
+	if (abs(translation[0] * rotational[2][2] - translation[2] * rotational[0][2]) > radiusA + radiusB) return 1;
+
+	//test AZxBX (Cross Product)
+	radiusA = this->GetHalfWidth()[0] * absRotational[1][0] + this->GetHalfWidth()[1] * absRotational[0][0];
+	radiusB = a_pOther->GetHalfWidth()[1] * absRotational[2][2] + a_pOther->GetHalfWidth()[2] * absRotational[2][1];
+	if (abs(translation[1] * rotational[0][0] - translation[0] * rotational[1][0]) > radiusA + radiusB) return 1;
+
+	//test AZxBY (Cross Product)
+	radiusA = this->GetHalfWidth()[0] * absRotational[1][1] + this->GetHalfWidth()[1] * absRotational[0][1];
+	radiusB = a_pOther->GetHalfWidth()[0] * absRotational[2][2] + a_pOther->GetHalfWidth()[2] * absRotational[2][0];
+	if (abs(translation[1] * rotational[0][1] - translation[0] * rotational[1][1]) > radiusA + radiusB) return 1;
+
+	//test AZxBZ (Cross Product)
+	radiusA = this->GetHalfWidth()[0] * absRotational[1][2] + this->GetHalfWidth()[1] * absRotational[0][2];
+	radiusB = a_pOther->GetHalfWidth()[0] * absRotational[2][1] + a_pOther->GetHalfWidth()[1] * absRotational[2][0];
+	if (abs(translation[1] * rotational[0][2] - translation[0] * rotational[1][2]) > radiusA + radiusB) return 1;
 
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
