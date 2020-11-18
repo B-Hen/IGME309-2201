@@ -12,6 +12,9 @@ Date: 2017/06
 
 #include "MyEntityManager.h"
 
+#include "Cell.h"
+#include <vector>
+
 namespace Simplex
 {
 //Adding Application to the Simplex namespace
@@ -19,7 +22,7 @@ class Application
 {
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager
 private:
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //programmer
+	String m_sProgrammer = "Breanna Henriquez - bh4974@rit.edu"; //programmer
 
 	static ImGuiObject gui; //GUI object
 	bool m_bGUI_Main = true; //show Main GUI window?
@@ -55,6 +58,20 @@ private:
 	sf::SoundBuffer m_soundBuffer; //buffer to play sound from
 	sf::Sound m_sound; //sound effect
 	sf::Music m_soundBGM; //background music
+
+	
+	vector3 m_stevePosition = vector3(); //vector to hold Steve's Position
+	vector3 m_cowPosition = vector3(); //vector to hold the cow's position
+	//std::vector<Cell> listOfCells = std::vector<Cell>(); //list of cells to do Astar on
+	Cell* arrayOfCells[10][10];
+
+	//ints to hold the start and target x and z 
+	int targetX, targetZ, startX, startZ;
+
+	//open and close list to hold the cells
+	std::vector<Cell*> openList = std::vector<Cell*>();
+	std::vector<Cell*> closeList = std::vector<Cell*>();
+	bool aStaarContinue = false;
 
 public:
 #pragma region Constructor / Run / Destructor
@@ -166,6 +183,15 @@ private:
 	OUTPUT: ---
 	*/
 	void ReleaseControllers(void);
+
+	//method to get the heuricstic Cost
+	float HCost(int x, int z, vector3 target);
+
+	//method for the A* algroithim
+	void aStar();
+
+	//method to check if the cell is valid to be check
+	bool isValid(int x, int z);
 #pragma endregion
 
 #pragma region Application Controls
