@@ -56,10 +56,16 @@ public:
 	void setHole(bool isHole);
 
 	//method to get the parent
-	int* getParentID();
+	Cell* getParentCell();
 
 	//method to set the arent
-	void setParentID();
+	void setParentCell(Cell* parent);
+
+	//method to get if the cell is on the close list
+	bool getClosed();
+
+	//method to set if the cell is on the close list
+	void setClosed(bool closed);
 
 private:
 	int* ID;			  //cell number
@@ -68,7 +74,8 @@ private:
 	float h;			  //Heuistics Cost
 	float f;			  //The weigth of the cell
 	bool isHole;          //Check is there is a hole in the wall
-	int* parentID;          //Array to hold the parent array
+	bool closed;		 //bool  to check if the cell is on the closed list
+	Cell* parent;        //Cell to hold parent
 };
 }
 

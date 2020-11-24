@@ -12,11 +12,12 @@ Simplex::Cell::Cell()
 	//set the properties when the cell is made
 	IDSize = 2;
 	ID = new int[IDSize]();
-	parentID = new int[IDSize]();
+	parent = nullptr;
 	g = FLT_MAX;
 	h = FLT_MAX;
 	f = FLT_MAX;
 	isHole = false;
+	closed = false;
 }
 
 Simplex::Cell::Cell(const Cell& otherCell)
@@ -25,14 +26,12 @@ Simplex::Cell::Cell(const Cell& otherCell)
 	IDSize = otherCell.IDSize;
 	ID = new int[IDSize]();
 	copy(otherCell.ID, otherCell.ID + otherCell.IDSize, ID);
-
-	parentID = new int[IDSize]();
-	copy(otherCell.parentID, otherCell.parentID + otherCell.IDSize, parentID);
-
+	parent = nullptr;
 	g = otherCell.g;
 	h = otherCell.h;
 	f = otherCell.f;
 	isHole = otherCell.isHole;
+	closed = otherCell.closed;
 }
 
 
@@ -52,24 +51,17 @@ Cell& Simplex::Cell::operator=(Cell const& otherCell)
 		IDSize = 2;
 	}
 
-	if (parentID != nullptr)
-	{
-		delete[] parentID;
-		parentID = nullptr;
-	}
-
 	//now copy the elements of th ID of the other cell
 	IDSize = otherCell.IDSize;
 	ID = new int[IDSize]();
 	copy(otherCell.ID, otherCell.ID + otherCell.IDSize, ID);
 
-	parentID = new int[IDSize]();
-	copy(otherCell.parentID, otherCell.parentID + otherCell.IDSize, parentID);
-
+	parent = nullptr;
 	g = otherCell.g;
 	h = otherCell.h;
 	f = otherCell.f;
 	isHole = otherCell.isHole;
+	closed = otherCell.closed;
 
 	return *this;
 }
@@ -79,9 +71,9 @@ Simplex::Cell::~Cell()
 	//set the arrary for ID to nullptr
 	delete[] ID;
 	ID = nullptr;
-	delete[] parentID;
-	parentID = nullptr;
 	IDSize = 2;
+
+	parent = nullptr;
 
 	//reset the other values
 	g = FLT_MAX;
@@ -141,12 +133,22 @@ void Simplex::Cell::setHole(bool isHole)
 	this->isHole = isHole;
 }
 
-int* Simplex::Cell::getParentID()
+Cell* Simplex::Cell::getParentCell()
 {
-	parentID;
+	return parent;
 }
 
-void Simplex::Cell::setParentID()
+void Simplex::Cell::setParentCell(Cell* parent)
 {
-	parentID = ID;
+	this->parent = parent;
+}
+
+bool Simplex::Cell::getClosed()
+{
+	return closed;
+}
+
+void Simplex::Cell::setClosed(bool closed)
+{
+	this->closed = closed;
 }

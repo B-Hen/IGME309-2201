@@ -416,22 +416,22 @@ void Application::ProcessKeyboard(void)
 	float fDelta = m_pSystem->GetDeltaTime(0);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		m_pEntityMngr->ApplyForce(vector3(-2.0f * fDelta, 0.0f, 0.0f), "Steve");
+		m_pEntityMngr->ApplyForce(vector3(-2.0f * fDelta, 0.0f, 0.0f), "Pig");
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		m_pEntityMngr->ApplyForce(vector3(2.0f * fDelta, 0.0f, 0.0f), "Steve");
+		m_pEntityMngr->ApplyForce(vector3(2.0f * fDelta, 0.0f, 0.0f), "Pig");
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	{
-		m_pEntityMngr->ApplyForce(vector3(0.0f, 0.0f, -2.0f * fDelta), "Steve");
+		m_pEntityMngr->ApplyForce(vector3(0.0f, 0.0f, -2.0f * fDelta), "Pig");
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
-		m_pEntityMngr->ApplyForce(vector3(0.0f, 0.0f, 2.0f * fDelta), "Steve");
+		m_pEntityMngr->ApplyForce(vector3(0.0f, 0.0f, 2.0f * fDelta), "Pig");
 	}
 #pragma endregion
 }

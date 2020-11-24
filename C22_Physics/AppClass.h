@@ -62,16 +62,18 @@ private:
 	
 	vector3 m_stevePosition = vector3(); //vector to hold Steve's Position
 	vector3 m_cowPosition = vector3(); //vector to hold the cow's position
+	vector3 m_pigPosition = vector3();
 	//std::vector<Cell> listOfCells = std::vector<Cell>(); //list of cells to do Astar on
 	Cell* arrayOfCells[10][10];
 
 	//ints to hold the start and target x and z 
-	int targetX, targetZ, startX, startZ;
+	int startIndexI, startIndexJ, targetIndexI, targetIndexJ;
 
 	//open and close list to hold the cells
 	std::vector<Cell*> openList = std::vector<Cell*>();
 	std::vector<Cell*> closeList = std::vector<Cell*>();
-	bool aStaarContinue = false;
+	std::vector<Cell*> eraseList = std::vector<Cell*>();
+	bool aStarContinue = true;
 
 public:
 #pragma region Constructor / Run / Destructor
@@ -192,6 +194,7 @@ private:
 
 	//method to check if the cell is valid to be check
 	bool isValid(int x, int z);
+
 #pragma endregion
 
 #pragma region Application Controls
