@@ -72,8 +72,9 @@ private:
 	//open and close list to hold the cells
 	std::vector<Cell*> openList = std::vector<Cell*>();
 	std::vector<Cell*> closeList = std::vector<Cell*>();
-	std::vector<Cell*> eraseList = std::vector<Cell*>();
 	bool aStarContinue = true;
+	int collision = 0;
+	bool newPosition = false;
 
 public:
 #pragma region Constructor / Run / Destructor

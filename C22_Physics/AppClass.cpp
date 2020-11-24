@@ -109,6 +109,15 @@ void Application::Update(void)
 		matrix4 planePosition = glm::translate(vector3(closeList[i]->getID()[1] - 0.5f, -0.011f, closeList[i]->getID()[0] - 0.5f)) * m4Rotation; //adjust by 0.5 to get in the cube perfectly
 		m_pMeshMngr->AddPlaneToRenderList(planePosition, C_BLUE, 1);
 	}
+
+	if (m_pEntityMngr->GetRigidBody("Steve")->IsColliding(m_pEntityMngr->GetRigidBody("Cow")))
+	{
+		if (collision == 0)
+		{
+			collision++;
+			std::cout << "has collidied" << std::endl;
+		}
+	}
 }
 void Application::Display(void)
 {
@@ -116,7 +125,7 @@ void Application::Display(void)
 	ClearScreen();
 
 	//if the a star algorthim is done them move steve using lerp
-	if (!aStarContinue)
+	if (closeList.size() > 0)
 	{
 		//get a timer
 		static float fTimer = 0;	//store the new timer
