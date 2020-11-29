@@ -46,7 +46,8 @@ void Application::DrawGUI(void)
 			ImGui::Text("	 F3: Orthographic Y\n");
 			ImGui::Text("	 F4: Orthographic Z\n");
 			ImGui::Separator();
-			ImGui::Text("Arrows: Apply force to Steve\n");
+			ImGui::Text("Using A* Steve will find the optimal path to the cow and use lerp to move towards it. \nOnce Steve and the cow collide, both will start at new points and A* will run again");
+			ImGui::Text("Arrows: Apply force to Pig and make him collide with both Steve and the cow. \nThe pig will push them around using physics\n");
 		}
 		ImGui::End();
 	}

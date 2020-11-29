@@ -177,6 +177,7 @@ void Application::Update(void)
 			collision = 0;
 		}
 
+		//print out the new start and target positions
 		std::cout << "Steve start position: (" << m_stevePosition.x << ", " << m_stevePosition.z << ")" << std::endl;
 		std::cout << "Cow target position: (" << m_cowPosition.x << ", " << m_cowPosition.z << ")" << std::endl;
 
