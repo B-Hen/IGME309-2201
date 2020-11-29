@@ -6,6 +6,9 @@
 using namespace Simplex;
 void Application::InitVariables(void)
 {
+	//random seed to make the floor swiss cheese
+	srand(time(NULL));
+
 	//Set the position and target of the camera
 	m_pCameraMngr->SetPositionTargetAndUpward(
 		vector3(5.0f, 15.0f, 15.0f), //Position
@@ -13,6 +16,9 @@ void Application::InitVariables(void)
 		AXIS_Y);					//Up
 
 	m_pLightMngr->SetPosition(vector3(0.0f, 3.0f, 13.0f), 1); //set the position of first light (0 is reserved for ambient light)
+
+	startList.push_back(vector3(6.0f, 1.0f, 8.0f));
+	startList.push_back(vector3(2.0f, 1.0f, 2.0f));
 
 	m_pEntityMngr->AddEntity("Minecraft\\Steve.obj", "Steve");
 	m_pEntityMngr->SetPosition(vector3(5.0f, 1.0f, 3.0f), "Steve");
@@ -29,14 +35,11 @@ void Application::InitVariables(void)
 	m_pigPosition = vector3(1.0f, -1.1f, 5.0f);
 	m_pEntityMngr->UsePhysicsSolver();
 
-
 	//set the start cell index and the end cell index
 	startIndexI = m_stevePosition.z;
 	startIndexJ = m_stevePosition.x;
 	targetIndexI = m_cowPosition.z;
 	targetIndexJ = m_cowPosition.x;
-
-	srand(time(NULL));
 	
 	for (int i = 0; i < 10; i++)
 	{
@@ -49,6 +52,7 @@ void Application::InitVariables(void)
 			if (rand() % 10 < 1)
 			{
 				arrayOfCells[i][j]->setHole(true);
+				arrayOfCells[i][j]->setClosed(true);
 				continue;
 			}
 
@@ -106,17 +110,125 @@ void Application::Update(void)
 	for (int i = 0; i < closeList.size(); i++)
 	{
 		matrix4 m4Rotation = glm::rotate(IDENTITY_M4, glm::radians(-90.0f), vector3(1.0f, 0.0f, 0.0f));
-		matrix4 planePosition = glm::translate(vector3(closeList[i]->getID()[1] - 0.5f, -0.011f, closeList[i]->getID()[0] - 0.5f)) * m4Rotation; //adjust by 0.5 to get in the cube perfectly
+		matrix4 planePosition = glm::translate(vector3(closeList[i]->getID()[1] - 0.5f, -0.01f, closeList[i]->getID()[0] - 0.5f)) * m4Rotation; //adjust by 0.5 to get in the cube perfectly
 		m_pMeshMngr->AddPlaneToRenderList(planePosition, C_BLUE, 1);
 	}
 
-	if (m_pEntityMngr->GetRigidBody("Steve")->IsColliding(m_pEntityMngr->GetRigidBody("Cow")))
+	//check to see if a new position needs to be made for steve and the cow once  they are colliding
+	if (newPosition)
 	{
+		//-----------------------------------------------------------------------------------------------------------
+		//ALL THIS CODE WAS TRYING TO GET IT TO WORK WITH A RANDOM START AND TARGET POSITION BUT IT WOULD BREAK
+		//AND I COULD NOT FIRGUE OUT WHY
+
+		//get random new start and taget places
+		/*m_stevePosition = vector3((float)((rand() % 8) + 1), -1.1f, (float)((rand() % 8) + 1));
+		m_pEntityMngr->SetPosition(vector3(m_stevePosition.x, 1.0f, m_stevePosition.z), "Steve");
+
+		m_cowPosition = vector3((float)((rand() % 8) + 1), -1.1f, (float)((rand() % 8) + 1));
+		m_pEntityMngr->SetPosition(vector3(m_cowPosition.x, 1.0f, m_cowPosition.z), "Cow");*/
+		//-------------------------------------------------------------------------------------------------------------
+
+
+		//if elses too show that a star works with different start and end points
 		if (collision == 0)
 		{
+			m_pEntityMngr->SetPosition(vector3(2.0f, 1.0f, 5.0f), "Steve");
+			m_stevePosition = vector3(2.0f, -1.1f, 5.0f);
+
+			//set the new positon of the cow
+			m_pEntityMngr->SetPosition(vector3(8.0f, 1.0f, 9.0f), "Cow");
+			m_cowPosition = vector3(8.0f, -1.1f, 9.0f);
+
 			collision++;
-			std::cout << "has collidied" << std::endl;
 		}
+		else if(collision == 1)
+		{
+			m_pEntityMngr->SetPosition(vector3(6.0f, 1.0f, 8.0f), "Steve");
+			m_stevePosition = vector3(6.0f, -1.1f, 8.0f);
+
+			//set the new positon of the cow
+			m_pEntityMngr->SetPosition(vector3(3.0f, 1.0f, 2.0f), "Cow");
+			m_cowPosition = vector3(3.0f, -1.1f, 2.0f);
+
+			collision++;
+		}
+		else if (collision == 2)
+		{
+			m_pEntityMngr->SetPosition(vector3(1.0f, 1.0f, 7.0f), "Steve");
+			m_stevePosition = vector3(1.0f, -1.1f, 7.0f);
+
+			//set the new positon of the cow
+			m_pEntityMngr->SetPosition(vector3(5.0f, 1.0f, 6.0f), "Cow");
+			m_cowPosition = vector3(5.0f, -1.1f, 6.0f);
+
+			collision++;
+		}
+		else if (collision == 3)
+		{
+			m_pEntityMngr->SetPosition(vector3(2.0f, 1.0f, 5.0f), "Steve");
+			m_stevePosition = vector3(2.0f, -1.1f, 5.0f);
+
+			//set the new positon of the cow
+			m_pEntityMngr->SetPosition(vector3(3.0f, 1.0f, 6.0f), "Cow");
+			m_cowPosition = vector3(3.0f, -1.1f, 6.0f);
+
+			//reset the collision so that it loops through start and target points
+			collision = 0;
+		}
+
+		std::cout << "Steve start position: (" << m_stevePosition.x << ", " << m_stevePosition.z << ")" << std::endl;
+		std::cout << "Cow target position: (" << m_cowPosition.x << ", " << m_cowPosition.z << ")" << std::endl;
+
+		//set the index for the start and target indecies
+		startIndexI = m_stevePosition.z;
+		startIndexJ = m_stevePosition.x;
+		targetIndexI = m_cowPosition.z;
+		targetIndexJ = m_cowPosition.x;
+
+		//reset all the cells so a star can start again
+		for (int i = 0; i < 10; i++)
+		{
+			for (int j = 0; j < 10; j++)
+			{
+				//make it so random piece of the floor are missing aka different obstacles and weights
+				if (arrayOfCells[i][j]->getHole())
+				{
+					continue;
+				}
+
+				//get and set the Heuistic Cost of each cell for A*
+				arrayOfCells[i][j]->setHeuisticsCost(HCost(i, j, m_cowPosition));
+
+				//set the moveent cost of each cell, each one will be a cost of 1.0f 
+				arrayOfCells[i][j]->setMovementCost(1.0f);
+
+				//reset parent
+				arrayOfCells[i][j]->setParentCell(nullptr);
+
+				//reset closed
+				arrayOfCells[i][j]->setClosed(false);
+
+				//check if it is the end point and make its H value equal to 0
+				if (i == targetIndexI && j == targetIndexJ)
+				{
+					arrayOfCells[i][j]->setHeuisticsCost(0.0f);
+				}
+
+				//check if it is the start point and make its G value equal to 0
+				if (i == startIndexI && j == startIndexJ)
+				{
+					arrayOfCells[i][j]->setMovementCost(0.0f);
+				}
+			}
+		}
+
+		//make astar true and run the method to get the new optimal path
+		aStarContinue = true;
+		aStar();
+
+		//make new positon false so it only runs once
+		newPosition = false;
 	}
 }
 void Application::Display(void)
@@ -150,10 +262,16 @@ void Application::Display(void)
 			startPosition = vector3(closeList[place]->getID()[1] - 0.5f, 1.0, closeList[place]->getID()[0]);
 			endPosition = vector3(closeList[place + 1]->getID()[1] - 0.5f, 1.0, closeList[place + 1]->getID()[0]);
 		}
-		else if (place == closeList.size() - 1)
+		else
 		{
-			startPosition = vector3(closeList[closeList.size() - 1]->getID()[1] - 0.5f, 1.0, closeList[closeList.size() - 1]->getID()[0]);
-			endPosition = vector3(closeList[closeList.size() - 1]->getID()[1] - 0.5f, 1.0, closeList[closeList.size() - 1]->getID()[0]);
+			//check if steve and the cow are colliding
+			if (m_pEntityMngr->GetRigidBody("Steve")->IsColliding(m_pEntityMngr->GetRigidBody("Cow")))
+			{
+				//clear the list and then make the new position true
+				closeList.clear();
+				openList.clear();
+				newPosition = true;
+			}
 		}
 
 		//realtionship between the animation time adn the cuurent time
@@ -253,6 +371,8 @@ void Application::aStar()
 				//set aStarContinue to true
 				aStarContinue = false;
 
+				openList.clear();
+
 				return;
 			}
 			//next check if there isn't a parent and the cell isn't a hole
@@ -310,6 +430,8 @@ void Application::aStar()
 
 				//set aStarContinue to true
 				aStarContinue = false;
+
+				openList.clear();
 
 				return;
 			}
@@ -369,6 +491,8 @@ void Application::aStar()
 				//set aStarContinue to true
 				aStarContinue = false;
 
+				openList.clear();
+
 				return;
 			}
 			//next check if there isn't a parent and the cell isn't a hole
@@ -426,6 +550,8 @@ void Application::aStar()
 
 				//set aStarContinue to true
 				aStarContinue = false;
+
+				openList.clear();
 
 				return;
 			}
@@ -485,6 +611,8 @@ void Application::aStar()
 				//set aStarContinue to true
 				aStarContinue = false;
 
+				openList.clear();
+
 				return;
 			}
 			//next check if there isn't a parent and the cell isn't a hole
@@ -542,6 +670,8 @@ void Application::aStar()
 
 				//set aStarContinue to true
 				aStarContinue = false;
+
+				openList.clear();
 
 				return;
 			}
@@ -601,6 +731,8 @@ void Application::aStar()
 				//set aStarContinue to true
 				aStarContinue = false;
 
+				openList.clear();
+
 				return;
 			}
 			//next check if there isn't a parent and the cell isn't a hole
@@ -657,6 +789,8 @@ void Application::aStar()
 
 				//set aStarContinue to true
 				aStarContinue = false;
+
+				openList.clear();
 
 				return;
 			}
@@ -721,8 +855,12 @@ void Application::aStar()
 		//remove the cell from the list
 		openList.erase(openList.begin() + index);
 
+		//openList.clear();
+
 		//add this new cell to the closed list
 		closeList.push_back(arrayOfCells[startIndexI][startIndexJ]);
+
+		//openList.clear();
 
 		//make the new cell closed
 		arrayOfCells[startIndexI][startIndexJ]->setClosed(true);
@@ -741,374 +879,3 @@ bool Application::isValid(int x, int z)
 	return false;
 }
 
-/*
-	//start by making the start node the current node
-	Cell* current = arrayOfCells[startX][startZ];  //safe delete this later
-	
-    //add the start to the close list
-	closeList.push_back(current);
-
-	//if(aStarContinue == false)
-	//std::cout << "false" << std::endl;
-
-
-	//std::cout << startX << " " << startZ << std::endl;
-
-	//loop through and check all the possible cells around current
-	while (!aStarContinue)
-	{
-		//std::cout << startX << " " << startZ << std::endl;
-
-		//first check if North cell is a valid cell
-		if (isValid(startX - 1, startZ))
-		{
-			//check to she is this cell is the target cell
-			if (startX == targetX && startZ == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX - 1][startZ]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX - 1][startZ]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX - 1][startZ]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX - 1][startZ]->setParentCell(current);
-					arrayOfCells[startX - 1][startZ]->setMovementCost(current->getmovementCost() + arrayOfCells[startX - 1][startZ]->getmovementCost());
-					arrayOfCells[startX - 1][startZ]->setWeight(arrayOfCells[startX - 1][startZ]->getmovementCost() + arrayOfCells[startX - 1][startZ]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX - 1][startZ]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX - 1][startZ]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX - 1][startZ]);
-
-				//calculate the movement cose
-				arrayOfCells[startX - 1][startZ]->setMovementCost(current->getmovementCost() + arrayOfCells[startX - 1][startZ]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX - 1][startZ]->setWeight(arrayOfCells[startX - 1][startZ]->getmovementCost() + arrayOfCells[startX - 1][startZ]->getHeuisticsCost());
-			}
-		}
-
-		//check the North east cell
-		if (isValid(startX - 1, startZ + 1))
-		{
-			//check to she is this cell is the target cell
-			if (startX - 1 == targetX && startZ + 1 == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX - 1][startZ + 1]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX - 1][startZ + 1]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX - 1][startZ + 1]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX - 1][startZ + 1]->setParentCell(current);
-					arrayOfCells[startX - 1][startZ + 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX - 1][startZ + 1]->getmovementCost());
-					arrayOfCells[startX - 1][startZ + 1]->setWeight(arrayOfCells[startX - 1][startZ + 1]->getmovementCost() + arrayOfCells[startX - 1][startZ + 1]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX - 1][startZ + 1]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX - 1][startZ + 1]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX - 1][startZ + 1]);
-
-				//calculate the movement cose
-				arrayOfCells[startX - 1][startZ + 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX - 1][startZ + 1]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX - 1][startZ + 1]->setWeight(arrayOfCells[startX - 1][startZ + 1]->getmovementCost() + arrayOfCells[startX - 1][startZ + 1]->getHeuisticsCost());
-			}
-		}
-
-		//check the north west cell
-		if (isValid(startX - 1, startZ - 1))
-		{
-			//check to she is this cell is the target cell
-			if (startX - 1 == targetX && startZ - 1 == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX - 1][startZ - 1]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX - 1][startZ - 1]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX - 1][startZ - 1]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX - 1][startZ - 1]->setParentCell(current);
-					arrayOfCells[startX - 1][startZ - 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX - 1][startZ - 1]->getmovementCost());
-					arrayOfCells[startX - 1][startZ - 1]->setWeight(arrayOfCells[startX - 1][startZ - 1]->getmovementCost() + arrayOfCells[startX - 1][startZ - 1]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX - 1][startZ - 1]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX - 1][startZ - 1]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX - 1][startZ - 1]);
-
-				//calculate the movement cose
-				arrayOfCells[startX - 1][startZ - 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX - 1][startZ - 1]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX - 1][startZ - 1]->setWeight(arrayOfCells[startX - 1][startZ - 1]->getmovementCost() + arrayOfCells[startX - 1][startZ - 1]->getHeuisticsCost());
-			}
-		}
-
-		//check the south cell
-		if (isValid(startX + 1, startZ))
-		{
-			//check to she is this cell is the target cell
-			if (startX + 1 == targetX && startZ == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX + 1][startZ]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX + 1][startZ]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX + 1][startZ]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX + 1][startZ]->setParentCell(current);
-					arrayOfCells[startX + 1][startZ]->setMovementCost(current->getmovementCost() + arrayOfCells[startX + 1][startZ]->getmovementCost());
-					arrayOfCells[startX + 1][startZ]->setWeight(arrayOfCells[startX + 1][startZ]->getmovementCost() + arrayOfCells[startX + 1][startZ]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX + 1][startZ]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX + 1][startZ]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX + 1][startZ]);
-
-				//calculate the movement cose
-				arrayOfCells[startX + 1][startZ]->setMovementCost(current->getmovementCost() + arrayOfCells[startX + 1][startZ]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX + 1][startZ]->setWeight(arrayOfCells[startX + 1][startZ]->getmovementCost() + arrayOfCells[startX + 1][startZ]->getHeuisticsCost());
-			}
-		}
-
-		//check the south east cell
-		if (isValid(startX + 1, startZ + 1))
-		{
-			//check to she is this cell is the target cell
-			if (startX + 1 == targetX && startZ == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX + 1][startZ + 1]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX + 1][startZ + 1]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX + 1][startZ + 1]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX + 1][startZ + 1]->setParentCell(current);
-					arrayOfCells[startX + 1][startZ + 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX + 1][startZ + 1]->getmovementCost());
-					arrayOfCells[startX + 1][startZ + 1]->setWeight(arrayOfCells[startX + 1][startZ + 1]->getmovementCost() + arrayOfCells[startX + 1][startZ + 1]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX + 1][startZ + 1]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX + 1][startZ + 1]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX + 1][startZ + 1]);
-
-				//calculate the movement cose
-				arrayOfCells[startX + 1][startZ + 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX + 1][startZ + 1]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX + 1][startZ + 1]->setWeight(arrayOfCells[startX + 1][startZ + 1]->getmovementCost() + arrayOfCells[startX + 1][startZ + 1]->getHeuisticsCost());
-			}
-		}
-
-		//check the south west cell
-		if (isValid(startX + 1, startZ - 1))
-		{
-			//check to she is this cell is the target cell
-			if (startX + 1 == targetX && startZ == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX + 1][startZ - 1]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX + 1][startZ - 1]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX + 1][startZ - 1]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX + 1][startZ - 1]->setParentCell(current);
-					arrayOfCells[startX + 1][startZ - 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX + 1][startZ - 1]->getmovementCost());
-					arrayOfCells[startX + 1][startZ - 1]->setWeight(arrayOfCells[startX + 1][startZ - 1]->getmovementCost() + arrayOfCells[startX + 1][startZ - 1]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX + 1][startZ - 1]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX + 1][startZ - 1]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX + 1][startZ - 1]);
-
-				//calculate the movement cose
-				arrayOfCells[startX + 1][startZ - 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX + 1][startZ - 1]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX + 1][startZ - 1]->setWeight(arrayOfCells[startX + 1][startZ - 1]->getmovementCost() + arrayOfCells[startX + 1][startZ - 1]->getHeuisticsCost());
-			}
-		}
-
-		//check the east cell
-		if (isValid(startX, startZ + 1))
-		{
-			//check to she is this cell is the target cell
-			if (startX - 1 == targetX && startZ + 1 == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX][startZ + 1]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX][startZ + 1]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX][startZ + 1]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX][startZ + 1]->setParentCell(current);
-					arrayOfCells[startX][startZ + 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX][startZ + 1]->getmovementCost());
-					arrayOfCells[startX][startZ + 1]->setWeight(arrayOfCells[startX][startZ + 1]->getmovementCost() + arrayOfCells[startX][startZ + 1]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX][startZ + 1]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX][startZ + 1]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX][startZ + 1]);
-
-				//calculate the movement cose
-				arrayOfCells[startX][startZ + 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX][startZ + 1]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX][startZ + 1]->setWeight(arrayOfCells[startX][startZ + 1]->getmovementCost() + arrayOfCells[startX][startZ + 1]->getHeuisticsCost());
-			}
-		}
-
-		//check the west cell
-		if (isValid(startX, startZ - 1))
-		{
-			//check to she is this cell is the target cell
-			if (startX - 1 == targetX && startZ + 1 == targetZ)
-			{
-				//add it to the close list
-				closeList.push_back(arrayOfCells[startX][startZ]);
-				aStarContinue = true;
-				std::cout << "no target" << std::endl;
-				return;
-			}
-			else if (arrayOfCells[startX][startZ - 1]->getParentCell() != nullptr)
-			{
-				//check if its movement cost is great than its movement cost from the current cell
-				if (arrayOfCells[startX][startZ - 1]->getmovementCost() > current->getmovementCost() + arrayOfCells[startX][startZ - 1]->getmovementCost())
-				{
-					//reparent the cell and recalulate theparent, movement cost, and heisticsCost
-					arrayOfCells[startX][startZ - 1]->setParentCell(current);
-					arrayOfCells[startX][startZ - 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX][startZ - 1]->getmovementCost());
-					arrayOfCells[startX][startZ - 1]->setWeight(arrayOfCells[startX][startZ - 1]->getmovementCost() + arrayOfCells[startX][startZ - 1]->getHeuisticsCost());
-				}
-			}
-			//check to see if the cell doesn't have a parent cell
-			else if (arrayOfCells[startX][startZ - 1]->getParentCell() == nullptr)
-			{
-				//add the current cell as the parent cell
-				arrayOfCells[startX][startZ - 1]->setParentCell(current);
-
-				//add this cell to the open list
-				openList.push_back(arrayOfCells[startX][startZ - 1]);
-
-				//calculate the movement cose
-				arrayOfCells[startX][startZ - 1]->setMovementCost(current->getmovementCost() + arrayOfCells[startX][startZ - 1]->getmovementCost());
-
-				//calulate the f cost
-				arrayOfCells[startX][startZ - 1]->setWeight(arrayOfCells[startX][startZ - 1]->getmovementCost() + arrayOfCells[startX][startZ - 1]->getHeuisticsCost());
-			}
-		}
-
-		//variable to check what the smallest f value is
-		float smallest = FLT_MAX;
-		//loop through the open list to get the cell with the loswest f cost
-		for (int i = 0; i < openList.size(); i++)
-		{
-			if (openList[i]->getWeight() < smallest)
-			{
-				//make a new smallest value
-				smallest = openList[i]->getWeight();
-
-				//make a new startX and startZ
-				int* ID = openList[i]->getID();
-
-				startX = ID[0];
-				startZ = ID[1];
-
-				std::cout << startX << " "  << startZ << std::endl;
-
-				//std::cout << startX << " " << startZ << std::endl;
-
-				//make a new current cell
-				//current = nullptr;
-				current = openList[i];
-
-				//put it in the close list
-				closeList.push_back(openList[i]);
-
-				//openList.clear();
-				//remove it from the open list
-				openList.erase(openList.begin() + (i - 1));
-			}
-		}
-	}*/

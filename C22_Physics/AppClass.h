@@ -66,6 +66,8 @@ private:
 	//std::vector<Cell> listOfCells = std::vector<Cell>(); //list of cells to do Astar on
 	Cell* arrayOfCells[10][10];
 
+	std::vector<vector3> startList = std::vector<vector3>();
+
 	//ints to hold the start and target x and z 
 	int startIndexI, startIndexJ, targetIndexI, targetIndexJ;
 
